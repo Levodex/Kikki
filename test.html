@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+	<style>
+		code
+		{
+			white-space: pre-wrap;
+		}
+		table
+		{
+			border: 10px groove #000000;
+		}
+	</style>
+	<script type="text/javascript" src="http://127.0.0.1/blowfish.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<table>
+		<form id="form1" accept-charset="UTF-8" enctype='application/json' method="POST">
+			<tr><td>Phone</td><td><input placeholder="phone" name="phone" maxlength="256" /></td></tr>
+			<tr><td>Mail</td><td><input placeholder="mail" name="mail" maxlength="256" /></td></tr>
+			<tr><td>Name</td><td><input placeholder="name" name="name" maxlength="256" /></td></tr>
+			<tr><td>Pass</td><td><input placeholder="pass" name="pass" maxlength="256" /></td></tr>
+			<tr><td>Default Currency</td><td><input placeholder="default currency" name="default_currency" maxlength="256" /></td></tr>
+			<tr><td colspan="2"><div id="sbmt1">Go!</div></td></tr>
+		</form>
+	</table>
+	<hr>
+	<code id="div1" placeholder="div1"></code>
+	<hr>
+	<table>
+		<form id="form2" accept-charset="UTF-8" enctype='application/json' method="POST">
+			<tr><td>Key</td><td><textarea placeholder="key" name="key"></textarea></td></tr>
+			<tr><td>UID</td><td><input placeholder="user" name="uid" maxlength="256" /></td></tr>
+			<tr><td colspan="2"><div id="sbmt2">Go!</div></td></tr>
+		</form>
+	</table>
+	<hr>
+	<code id="div2" placeholder="div2"></code>
+	<hr>
+	<table>
+		<form id="form3" accept-charset="UTF-8" enctype='application/json' method="POST">
+			<tr><td>Key</td><td><textarea placeholder="key" name="key"></textarea></td></tr>
+			<tr><td>HostID</td><td><input placeholder="host" name="host" maxlength="256" /></td></tr>
+			<tr><td>Payee</td><td><input placeholder="payee" name="payee" maxlength="256" /></td></tr>
+			<tr><td>Amount</td><td><input placeholder="amount" name="amount" maxlength="256" /></td></tr>
+			<tr><td>Payers</td><td><input placeholder="payer-uids" name="payer-uids" maxlength="256" /></td></tr>
+			<tr><td>Shares</td><td><input placeholder="payer-shares" name="payer-shares" maxlength="256" /></td></tr>
+			<tr><td>Owes</td><td><input placeholder="payer-owes" name="payer-owes" maxlength="256" /></td></tr>
+			<tr><td>Bill PNG Blobs</td><td><input placeholder="bills" name="bills" maxlength="256" /></td></tr>
+			<tr><td>Noters</td><td><input placeholder="note-users" name="note-users" maxlength="256" /></td></tr>
+			<tr><td>Comments</td><td><input placeholder="note-notes" name="note-notes" maxlength="256" /></td></tr>
+			<tr><td>Nature</td><td><input placeholder="nature" name="nature" maxlength="256" /></td></tr>
+			<tr><td>Currency</td><td><input placeholder="currency" name="currency" maxlength="256" /></td></tr>
+			<tr><td>Associated TxIDs</td><td><input placeholder="assocs" name="assocs" maxlength="256" /></td></tr>
+			<tr><td colspan="2"><div id="sbmt3">Go!</div></td></tr>
+		</form>
+	</table>
+	<hr>
+	<code id="div3" placeholder="div3"></code>
+	<hr>
+	<table>
+		<form id="form4" accept-charset="UTF-8" enctype='application/json' method="POST">
+			<tr><td>Old Key</td><td><textarea placeholder="oldkey" name="oldkey"></textarea></td></tr>
+			<tr><td>UID</td><td><input placeholder="user" name="uid" maxlength="256" /></td></tr>
+			<tr><td colspan="2"><div id="sbmt4">Go!</div></td></tr>
+		</form>
+	</table>
+	<hr>
+	<code id="div4" placeholder="div4"></code>
+	<hr>
+	<script type="text/javascript">
+		function getFormObj(formId)
+		{
+    		var formObj = {};
+    		var inputs = $('#'+formId).serializeArray();
+			$.each(inputs, function (i, input)
+			{
+        		formObj[input.name] = input.value;
+    		});
+    		return formObj;
+		}
+		function crypt(mode, data, key, ciphermode, outputtype)
+		{
+			var d = data.replace("'", "\'");
+			return blowfish[mode](data, key, {outputType: +outputtype, cipherMode: +ciphermode});
+		}
+		$(document).ready(function()
+		{
+			$("#sbmt1").click
+			(
+				function()
+				{
+					$.ajax
+					(
+						{
+							url: "http://127.0.0.1:5000/register/",
+							type: 'post',
+            				dataType: 'json',
+							data: getFormObj("form1"),
+							success: function(result)
+							{
+								$("#div1").html(JSON.stringify(result));
+								$('#div1').html($('#div1').html().replace(/\\n/g, '<br />'));
+								console.log(result);
+							}
+						}
+					);
+				}
+			);
+			$("#sbmt2").click
+			(
+				function()
+				{
+					var d = getFormObj("form2");
+					$.ajax
+					(
+						{
+							url: "http://127.0.0.1:5000/request/getinfo",
+							type: 'post',
+            				dataType: 'json',
+							data: d,
+							success: function(result)
+							{
+								$("#div2").html(JSON.stringify(result));
+								$('#div2').html($('#div2').html().replace(/\\n/g, '<br />'));
+								console.log(result);
+							}
+						}
+					);
+				}
+			);
+			$("#sbmt3").click
+			(
+				function()
+				{
+					var d = getFormObj("form3");
+					$.ajax
+					(
+						{
+							url: "http://127.0.0.1:5000/request/newtx",
+							type: 'post',
+            				dataType: 'json',
+							data: d,
+							success: function(result)
+							{
+								$("#div3").html(JSON.stringify(result));
+								$('#div3').html($('#div3').html().replace(/\\n/g, '<br />'));
+								console.log(result);
+							}
+						}
+					);
+				}
+			);
+			$("#sbmt4").click
+			(
+				function()
+				{
+					var d = getFormObj("form4");
+					$.ajax
+					(
+						{
+							url: "http://127.0.0.1:5000/request/changekeys",
+							type: 'post',
+            				dataType: 'json',
+							data: d,
+							success: function(result)
+							{
+								$("#div4").html(JSON.stringify(result));
+								$('#div4').html($('#div4').html().replace(/\\n/g, '<br />'));
+								console.log(result);
+							}
+						}
+					);
+				}
+			);
+		});
+	</script>
+	<script type="text/javascript" src="test.js/"></script>
+</html>
